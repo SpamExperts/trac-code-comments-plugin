@@ -48,8 +48,7 @@ class UpdateTicketCodeComments(Component):
         if result_callback is None:
             result_callback = lambda db, cursor: True
         result = {}
-        @self.env.with_transaction()
-        def insert_comment(db):
+        with self.env.db_transaction as db:
             cursor = db.cursor()
             cursor.execute(query, args)
             result['result'] = result_callback(db, cursor)
