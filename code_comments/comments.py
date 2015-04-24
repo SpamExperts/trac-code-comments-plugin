@@ -30,8 +30,7 @@ class Comments:
 
     def select(self, *query):
         result = {}
-        @self.env.with_transaction()
-        def get_comments(db):
+        with self.env.db_query as db:
             cursor = db.cursor()
             cursor.execute(*query)
             result['comments'] = cursor.fetchall()
@@ -44,8 +43,7 @@ class Comments:
             where = 'WHERE '+conditions_str
         query = 'SELECT COUNT(*) FROM code_comments ' + where
         result = {}
-        @self.env.with_transaction()
-        def get_comment_count(db):
+        with self.env.db_query as db:
             cursor = db.cursor()
             cursor.execute(query, values)
             result['count'] = cursor.fetchone()[0]
@@ -111,8 +109,7 @@ class Comments:
         column_names_to_insert = [column_name for column_name in comment.columns if column_name != 'id']
         values = [getattr(comment, column_name) for column_name in column_names_to_insert]
         comment_id = [None]
-        @self.env.with_transaction()
-        def insert_comment(db):
+        with self.env.db_transaction as db:
             cursor = db.cursor()
             sql = "INSERT INTO code_comments (%s) values(%s)" % (', '.join(column_names_to_insert), ', '.join(['%s'] * len(values)))
             self.env.log.debug(sql)

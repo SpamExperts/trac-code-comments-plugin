@@ -74,8 +74,7 @@ class Subscription(object):
             # Already has an id, don't insert
             return False
         else:
-            @self.env.with_transaction()
-            def do_insert(db):
+            with self.env.db_transaction as db:
                 cursor = db.cursor()
                 insert = ("INSERT INTO code_comments_subscriptions "
                           "(user, type, path, repos, rev, notify) "
@@ -94,8 +93,7 @@ class Subscription(object):
             # Doesn't have a valid id, don't update
             return False
         else:
-            @self.env.with_transaction()
-            def do_update(db):
+            with self.env.db_transaction as db:
                 cursor = db.cursor()
                 update = ("UPDATE code_comments_subscriptions SET "
                           "user=%s, type=%s, path=%s, repos=%s, rev=%s, "
@@ -109,13 +107,12 @@ class Subscription(object):
                     return False
                 return True
 
-    def delete(self, db=None):
+    def delete(self):
         """
         Delete an existing subscription.
         """
         if self.id > 0:
-            @self.env.with_transaction()
-            def do_delete(db):
+            with self.env.db_transaction as db:
                 cursor = db.cursor()
                 delete = ("DELETE FROM code_comments_subscriptions WHERE "
                           "id=%s")
