@@ -152,7 +152,7 @@ class Comment:
 class CommentJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, Comment):
-            for_json = dict([(name, getattr(o, name)) for name in o.__dict__ if isinstance(getattr(o, name), (basestring, int, list, dict))])
+            for_json = dict([(name, getattr(o, name)) for name in o.__dict__ if isinstance(getattr(o, name), (basestring, int, long, list, dict))])
             for_json['formatted_date'] = o.formatted_date()
             for_json['permalink'] = o.href()
             return for_json
